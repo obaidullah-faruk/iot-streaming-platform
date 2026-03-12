@@ -1,18 +1,48 @@
 DOCKER_COMPOSE_DIR=infrastructure/docker
+KAFKA_CONTAINER=kafka
+KAFKA_BIN=/opt/kafka/bin/kafka-topics.sh
+POSTGRES_CONTAINER=postgres
+TOPIC_NAME=iot.telemetry
 
-.PHONY: up down restart logs ps
+.PHONY: help up down restart logs ps test-db create-topic list-topics test-all
 
-up:
+help: ## Show this help message
+	@echo 'Usage: make [target]'
+	@echo ''
+	@echo 'Targets:'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+up: ## Start all docker containers in background
 	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml up -d
 
-down:
+down: ## Stop and remove all containers
 	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml down
 
-restart:
+restart: ## Restart all containers
 	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml restart
 
-logs:
+logs: ## Follow logs of all containers
 	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml logs -f
 
-ps:
+ps: ## List running containers
 	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml ps
+
+test-db: ## Test Postgres connection
+	@echo "Checking Postgres connection..."
+	docker exec $(POSTGRES_CONTAINER) pg_isready -U obaidullah.faruk05 -d iot_db
+
+create-topic: ## Create Kafka topic: iot.telemetry
+	@echo "Creating Kafka topic $(TOPIC_NAME)..."
+	docker exec $(KAFKA_CONTAINER) $(KAFKA_BIN) --create --topic $(TOPIC_NAME) --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --if-not-exists
+
+list-topics: ## List all Kafka topics
+	@echo "Listing Kafka topics..."
+	docker exec $(KAFKA_CONTAINER) $(KAFKA_BIN) --list --bootstrap-server localhost:9092
+
+db-wipe: ## Delete database volume
+	@echo "Stopping containers and removing volumes..."
+	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml down -v
+	@echo "Restarting containers..."
+	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml up -d
+
+test-all: test-db create-topic list-topics ## Run all infrastructure tests
