@@ -3,6 +3,8 @@
 ## Steps 
 
 ```
-1. Create the infrusturucture/docker/docker-compose.yml file
-2. Create Makefile
+make build
+make up
+make create-topic
+make test-all
 ```
