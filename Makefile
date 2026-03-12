@@ -1,10 +1,11 @@
 DOCKER_COMPOSE_DIR=infrastructure/docker
 KAFKA_CONTAINER=kafka
 KAFKA_BIN=/opt/kafka/bin/kafka-topics.sh
+KAFKA_CONSOLE_CONSUMER=/opt/kafka/bin/kafka-console-consumer.sh
 POSTGRES_CONTAINER=postgres
 TOPIC_NAME=iot.telemetry
 
-.PHONY: help up down restart logs ps test-db create-topic list-topics test-all
+.PHONY: help up down restart logs ps test-db create-topic list-topics test-all build simulator-logs consume-telemetry
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -46,3 +47,12 @@ db-wipe: ## Delete database volume
 	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml up -d
 
 test-all: test-db create-topic list-topics ## Run all infrastructure tests
+
+build: ## Build or rebuild services
+	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml build
+
+simulator-logs: ## Follow simulator logs
+	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml logs -f simulator
+
+consume-telemetry: ## Read messages from iot.telemetry topic
+	docker exec $(KAFKA_CONTAINER) $(KAFKA_CONSOLE_CONSUMER) --topic $(TOPIC_NAME) --bootstrap-server localhost:9092 --from-beginning

@@ -25,6 +25,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG_RETENTION_BYTES: 524288000 # 500 MB (500 * 1024 * 1024)
     networks:
       - iot-network
 
@@ -65,6 +66,19 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin@123
     ports:
       - "5050:80"
+    networks:
+      - iot-network
+
+  simulator:
+    build:
+      context: ../../services/simulator
+    container_name: simulator
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC: iot.telemetry
+      DEVICE_ID: thermal_sensor_01
     networks:
       - iot-network
 
