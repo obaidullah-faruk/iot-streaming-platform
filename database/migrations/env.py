@@ -19,11 +19,11 @@ from database.models.schema import Base
 config = context.config
 
 # Overwrite the sqlalchemy.url if provided by environment
-DB_USER = os.getenv('POSTGRES_USER', 'obaidullah.faruk05')
-DB_PASS = urllib.parse.quote_plus(os.getenv('POSTGRES_PASSWORD', 'admin@123'))
+DB_USER = os.getenv('POSTGRES_USER')
+DB_PASS = urllib.parse.quote_plus(os.getenv('POSTGRES_PASSWORD', ''))
 DB_HOST = os.getenv('POSTGRES_HOST', 'localhost')  # Usually localhost for host migrations
 DB_PORT = os.getenv('POSTGRES_PORT', '5432')
-DB_NAME = os.getenv('POSTGRES_DB', 'iot_db')
+DB_NAME = os.getenv('POSTGRES_DB')
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 # Alembic's configparser parses % as interpolation, so we must double it
 config.set_main_option("sqlalchemy.url", DATABASE_URL.replace('%', '%%'))

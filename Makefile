@@ -1,9 +1,12 @@
+-include .env
+export
+
 DOCKER_COMPOSE_DIR=infrastructure/docker
 KAFKA_CONTAINER=kafka
 KAFKA_BIN=/opt/kafka/bin/kafka-topics.sh
 KAFKA_CONSOLE_CONSUMER=/opt/kafka/bin/kafka-console-consumer.sh
 POSTGRES_CONTAINER=postgres
-TOPIC_NAME=iot.telemetry
+TOPIC_NAME=$(KAFKA_TOPIC)
 
 .PHONY: help up down restart logs ps test-db create-topic list-topics test-all build simulator-logs consume-telemetry
 
@@ -30,7 +33,7 @@ ps: ## List running containers
 
 test-db: ## Test Postgres connection
 	@echo "Checking Postgres connection..."
-	docker exec $(POSTGRES_CONTAINER) pg_isready -U obaidullah.faruk05 -d iot_db
+	docker exec $(POSTGRES_CONTAINER) pg_isready -U $(POSTGRES_USER) -d $(POSTGRES_DB)
 
 create-topic: ## Create Kafka topic: iot.telemetry
 	@echo "Creating Kafka topic $(TOPIC_NAME)..."

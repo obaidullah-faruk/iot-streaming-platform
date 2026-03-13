@@ -42,9 +42,9 @@ def main():
     # Ensure DB is up before connecting to Kafka
     wait_for_db()
 
-    KAFKA_BOOTSTRAP_SERVERS = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'kafka:9092')
-    KAFKA_TOPIC = os.getenv('KAFKA_TOPIC', 'iot.telemetry')
-    GROUP_ID = os.getenv('KAFKA_GROUP_ID', 'iot-worker-group')
+    KAFKA_BOOTSTRAP_SERVERS = os.getenv('KAFKA_BOOTSTRAP_SERVERS')
+    KAFKA_TOPIC = os.getenv('KAFKA_TOPIC')
+    GROUP_ID = os.getenv('KAFKA_GROUP_ID')
 
     conf = {
         'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS,

@@ -46,9 +46,9 @@ services:
     image: timescale/timescaledb:2.25.2-pg17
     container_name: postgres
     environment:
-      - POSTGRES_USER=obaidullah.faruk05
-      - POSTGRES_PASSWORD=admin@123
-      - POSTGRES_DB=iot_db
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -62,8 +62,8 @@ services:
     depends_on:
       - postgres
     environment:
-      - PGADMIN_DEFAULT_EMAIL=obaidullah.faruk05@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=admin@123
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "5050:80"
     networks:
@@ -76,9 +76,9 @@ services:
     depends_on:
       - kafka
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      KAFKA_TOPIC: iot.telemetry
-      DEVICE_ID: thermal_sensor_01
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      KAFKA_TOPIC: ${KAFKA_TOPIC}
+      DEVICE_ID: ${DEVICE_ID}
     networks:
       - iot-network
 
@@ -91,14 +91,14 @@ services:
       - kafka
       - postgres
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      KAFKA_TOPIC: iot.telemetry
-      KAFKA_GROUP_ID: iot-worker-group
-      POSTGRES_USER: obaidullah.faruk05
-      POSTGRES_PASSWORD: admin@123
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: iot_db
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      KAFKA_TOPIC: ${KAFKA_TOPIC}
+      KAFKA_GROUP_ID: ${KAFKA_GROUP_ID}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
     networks:
       - iot-network
 
@@ -110,11 +110,11 @@ services:
     depends_on:
       - postgres
     environment:
-      POSTGRES_USER: obaidullah.faruk05
-      POSTGRES_PASSWORD: admin@123
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: iot_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "8000:8000"
     networks:
