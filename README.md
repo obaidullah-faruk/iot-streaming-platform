@@ -5,6 +5,6 @@
 ```
 make build
 make up
-make create-topic
+make setup
 make test-all
 ```

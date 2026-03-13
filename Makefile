@@ -63,5 +63,10 @@ worker-logs: ## Follow worker logs
 api-logs: ## Follow api logs
 	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml logs -f api
 
+migrate: ## Run database migrations
+	docker exec worker alembic -c database/alembic.ini upgrade head
+
+setup: create-topic migrate ## Setup infrastructure (topics + migrations)
+
 consume-telemetry: ## Read messages from iot.telemetry topic
 	docker exec $(KAFKA_CONTAINER) $(KAFKA_CONSOLE_CONSUMER) --topic $(TOPIC_NAME) --bootstrap-server localhost:9092 --from-beginning
