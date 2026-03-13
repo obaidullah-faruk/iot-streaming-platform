@@ -102,6 +102,24 @@ services:
     networks:
       - iot-network
 
+  api:
+    build:
+      context: ../../
+      dockerfile: services/api/Dockerfile
+    container_name: api
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_USER: obaidullah.faruk05
+      POSTGRES_PASSWORD: admin@123
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: iot_db
+    ports:
+      - "8000:8000"
+    networks:
+      - iot-network
+
 networks:
 
   iot-network:
