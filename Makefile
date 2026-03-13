@@ -54,5 +54,8 @@ build: ## Build or rebuild services
 simulator-logs: ## Follow simulator logs
 	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml logs -f simulator
 
+worker-logs: ## Follow worker logs
+	docker compose -f $(DOCKER_COMPOSE_DIR)/docker-compose.yml logs -f worker
+
 consume-telemetry: ## Read messages from iot.telemetry topic
 	docker exec $(KAFKA_CONTAINER) $(KAFKA_CONSOLE_CONSUMER) --topic $(TOPIC_NAME) --bootstrap-server localhost:9092 --from-beginning

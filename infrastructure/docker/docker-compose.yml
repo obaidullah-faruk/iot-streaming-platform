@@ -43,7 +43,7 @@ services:
       - iot-network
 
   postgres:
-    image: postgres:17-alpine
+    image: timescale/timescaledb:2.25.2-pg17
     container_name: postgres
     environment:
       - POSTGRES_USER=obaidullah.faruk05
@@ -82,7 +82,28 @@ services:
     networks:
       - iot-network
 
+  worker:
+    build:
+      context: ../../
+      dockerfile: services/worker/Dockerfile
+    container_name: worker
+    depends_on:
+      - kafka
+      - postgres
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC: iot.telemetry
+      KAFKA_GROUP_ID: iot-worker-group
+      POSTGRES_USER: obaidullah.faruk05
+      POSTGRES_PASSWORD: admin@123
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: iot_db
+    networks:
+      - iot-network
+
 networks:
+
   iot-network:
     driver: bridge
 
