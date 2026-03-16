@@ -1,0 +1,77 @@
+---
+# 1. THE DISK (PersistentVolumeClaim)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-pvc
+  namespace: iot-platform
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# 2. THE DNS NAME (Service)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: iot-platform
+spec:
+  selector:
+    app: kafka
+  ports:
+    - name: broker
+      port: 9092
+    - name: controller
+      port: 9093
+---
+# 3. THE BROKER (Deployment)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: iot-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: apache/kafka:4.0.2-rc3
+        ports:
+        - containerPort: 9092
+        - containerPort: 9093
+        env:
+        - name: KAFKA_NODE_ID
+          value: "1"
+        - name: KAFKA_PROCESS_ROLES
+          value: "broker,controller"
+        - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+          value: "1@kafka:9093"
+        - name: KAFKA_CONTROLLER_LISTENER_NAMES
+          value: "CONTROLLER"
+        - name: KAFKA_LISTENERS
+          value: "PLAINTEXT://:9092,CONTROLLER://:9093"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://kafka:9092"
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+        - name: KAFKA_CLUSTER_ID
+          value: "MkU2Y2YxYmU2YmU0YmU0Ym" # Using the same ID as before
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        volumeMounts:
+        - name: kafka-storage
+          mountPath: /var/lib/kafka/data
+      volumes:
+      - name: kafka-storage
+        persistentVolumeClaim:
+          claimName: kafka-pvc

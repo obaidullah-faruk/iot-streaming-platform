@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+  namespace: iot-platform
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure 
+      containers:
+      - name: migration
+        image: iot-worker:latest
+        imagePullPolicy: IfNotPresent
+        command: ["alembic", "-c", "database/alembic.ini", "upgrade", "head"]
+        envFrom:
+        - configMapRef:
+            name: iot-config
+        - secretRef:
+            name: iot-secrets

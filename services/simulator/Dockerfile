@@ -7,9 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY services/simulator/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY simulator.py .
+COPY services/simulator/simulator.py .
 
 CMD ["python", "simulator.py"]
